@@ -67,7 +67,7 @@ public:
 
 // Here is the "Parallel" part of the algorithm
 // Each automaton runs with the same input
-            for (int i = 0; i < automata.size(); i++) {
+            for (int i = 0; i < (int)automata.size(); i++) {
                 int inputRead = automata[i]->Start(input);
                 if (inputRead > maxRead) {
                     maxRead = inputRead;
@@ -105,7 +105,7 @@ public:
 // No automaton accepted input; create invalid token
             else {
                 maxRead = 1;
-                newToken = new Token(UNDEFINED, input.substr(0,1), 1);
+                newToken = new Token(UNDEFINED, input.substr(0,1), lineNumber);
                 tokens.push_back(newToken);
             }
 
@@ -115,7 +115,7 @@ public:
         }
     }
         catch(int e){
-            newToken = new Token(UNDEFINED, input, lineNumber);
+            newToken = new Token(UNDEFINED, input.substr(0,input.size()-1), lineNumber);
             tokens.push_back(newToken);
             for(int f = 0; f < (int)input.size(); f++){
                 if(input.at(f) == '\n'){
@@ -128,13 +128,17 @@ public:
     }
 
 
-
+    std::vector<Token*> getTokens(){
+        return tokens;
+    }
     std::string printTokens(){
         std::string toPrint;
-        for(int i = 0; i < tokens.size(); i++){
-            toPrint += "(" + tokens.at(i)->getTokenType() + ", \"" + tokens.at(i)-> getContent() + "\", " + tokens.at(i)->getLine() + ")\n";
+        for(int i = 0; i < (int)tokens.size(); i++){
+
+                toPrint += "(" + tokens.at(i)->getTokenType() + ",\"" + tokens.at(i)->getContent() + "\"," +
+                           tokens.at(i)->getLine() + ")\n";
         }
-        toPrint += "Total Tokens: " + std::to_string(tokens.size()) + "\n";
+        toPrint += "Total Tokens = " + std::to_string(tokens.size()) + "\n";
         return toPrint;
     }
 };

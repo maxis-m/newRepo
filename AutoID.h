@@ -22,7 +22,7 @@ public:
     }
 void s0(const std::string& input) {
     if (isalpha(input.at(0))) {
-        if(input.length() == 1){
+        if((int)input.length() == 1){
             read++;
         }
         else {
@@ -33,7 +33,7 @@ void s0(const std::string& input) {
 }
 void s1(const std::string& input) {
     if (isalpha(input.at(read)) || isdigit(input.at(read))) {
-        if(input.length()-1 == read){
+        if((int)input.length()-1 == read){
             read++;
         }
         else {

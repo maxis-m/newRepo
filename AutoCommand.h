@@ -20,13 +20,13 @@ public:
     int Start(const std::string& input) {
         read = 0;
         s0(input);
-        if(read != symbol1.size()){
+        if(read != (int)symbol1.size()){
             read = 0;
         }
         return read;
     }
 void s0(const std::string& input) {
-    if(read < (symbol1.length()) && input.length() > 1){
+    if(read < (int)(symbol1.length()) && (int)input.length() > 1){
         if (input.at(read) == symbol1.at(read)) {
             read++;
             s0(input);

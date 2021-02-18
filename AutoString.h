@@ -29,7 +29,7 @@ public:
     }
 
     void s1(const std::string& input) {
-        if(read < input.length()) {
+        if(read < (int)input.length()) {
             if (input.at(read) == '\'') {
                 read++;
                 s2(input);
@@ -41,7 +41,7 @@ public:
             else if(input.at(read) == 04){
                 throw -1;
             }
-            else if (input.at(read) != '\'' && read < input.length()) {
+            else if (input.at(read) != '\'' && read < (int)input.length()) {
                 read++;
                 s1(input);
             }
@@ -49,7 +49,7 @@ public:
         }
     }
     void s2(const std::string& input){
-        if(read < input.length()) {
+        if(read < (int)input.length()) {
             if(input.at(read) == '\''){
                 read++;
                 s1(input);

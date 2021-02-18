@@ -22,15 +22,15 @@ public:
     }
 
     void s0(const std::string& input) {
-        if (input.at(read) == '#') {
+        if (input.at(read) == '#' && input.at(read+1) !='|') {
             read++;
             s1(input);
         }
     }
 
     void s1(const std::string& input) {
-if(read < input.length()){
-        if (/*!input.eof() &&*/ input.at(read) != '\n' && input.at(read) != '|') {
+if(read < (int)input.length()){
+        if (/*!input.eof() &&*/ input.at(read) != '\n' ) {
             read++;
             s1(input);
         }

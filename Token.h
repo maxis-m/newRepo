@@ -67,14 +67,14 @@ public:
         else if(tokenType == COMMENT){
             return "COMMENT";
         }
-        else if(tokenType == INVALID){
-            return "INVALID";
-        }
         else if(tokenType == UNDEFINED){
             return "UNDEFINED";
         }
         else if(tokenType == ENDOF){
-            return "ENDOF";
+            return "EOF";
+        }
+        else{
+            return "UNDEFINED";
         }
     }
     std::string getContent(){
