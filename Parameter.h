@@ -5,21 +5,28 @@
 #ifndef LEXER_PARAMETER_H
 #define LEXER_PARAMETER_H
 #include "Parser.h"
+//#include "Expression.h"
 #include <vector>
 using namespace std;
 
 
 class Parameter{
 private:
-    vector<string> expressionString;
+    vector<Parameter> expressionString;
+    //Expression expressionParam;
     string stringParam;
     bool isExpression = false;
+
 
 public:
     Parameter(){
 
     }
-    void newExpression(string var1, string var2, string var3){
+    //void setExpression(Expression newExp){
+       // Expression expressionParam;
+        //expressionParam = newExp;
+    //}
+    void newExpression(Parameter var1, Parameter var2, Parameter var3){
         expressionString.push_back(var1);
         expressionString.push_back(var2);
         expressionString.push_back(var3);
@@ -31,9 +38,11 @@ public:
     string getParam(){
         string outPut;
         if(isExpression){
-            outPut += expressionString.at(0);
-            outPut += expressionString.at(1);
-            outPut += expressionString.at(2);
+            outPut +="(";
+            outPut += expressionString.at(0).getParam();
+            outPut += expressionString.at(1).getParam();
+            outPut += expressionString.at(2).getParam();
+            outPut +=")";
         }
         else{
             outPut = stringParam;

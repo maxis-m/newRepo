@@ -34,7 +34,7 @@ private:
     vector<Parameter> domain;
     vector<Parameter> factDomain;
     int numInPredicate = 0;
-    bool isExpression = false;
+    //bool isExpression = false;
     vector<Predicate> bodyPredicates;
 
 public:
@@ -59,13 +59,16 @@ public:
             ParseQuery();
             ParseQueryList();
             outPut = "Success!";
+            outPut += getPredicates();
+
         }
         catch(int e){
-            outPut = "Failure!";
-            outPut += "(" + tokens.at(e)->getTokenType() + ",\"" + tokens.at(e)->getContent() + "\"," +
+            outPut = "Failure!\n";
+            outPut += "\t(" + tokens.at(e)->getTokenType() + ",\"" + tokens.at(e)->getContent() + "\"," +
                       tokens.at(e)->getLine() + ")\n";
         }
         return outPut;
+
     }
     //PARSE LISTS
     //TODO: FILL LIST FUNCTIONS
@@ -303,14 +306,9 @@ public:
         if(tokens.at(i)->getTokenType() == "STRING" || tokens.at(i)->getTokenType() == "ID" ||
            tokens.at(i)->getTokenType() == "LEFT_PAREN" ){
             if(tokens.at(i)->getTokenType() == "LEFT_PAREN"){
-                isExpression = true;
-                int f = i;
-                ParseExpression();
-                Parameter newExp;
-                newExp.newExpression(tokens.at(f)->getContent(),tokens.at(f+1)->getContent(),tokens.at(f+2)->getContent());
+                Parameter newExp = ParseExpression();
                 domain.push_back(newExp);
                 numInPredicate++;
-                isExpression = false;
             }
             else if(tokens.at(i)->getTokenType() == "STRING"){
                 ParseParameterTerminal("STRING");
@@ -325,28 +323,56 @@ public:
     }
 
     //TODO create expression
-    void ParseExpression(){
+    Parameter ParseExpression(){
         if(tokens.at(i)->getTokenType() == "LEFT_PAREN"){
             ParseTerminal("LEFT_PAREN");
-            ParseParameter();
-            ParseOperator();
-            ParseParameter();
+            Parameter p1 = ParseExpressionParameter();
+            Parameter p2 = ParseOperator();
+            Parameter p3 = ParseExpressionParameter();
             ParseTerminal("RIGHT_PAREN");
-
-
+            Parameter newParam;
+            newParam.newExpression(p1,p2,p3);
+            return newParam;
         }
         else{
             throw i;
         }
     }
-    void ParseOperator(){
+    Parameter ParseExpressionParameter(){
+        if(tokens.at(i)->getTokenType() == "STRING" || tokens.at(i)->getTokenType() == "ID" ||
+           tokens.at(i)->getTokenType() == "LEFT_PAREN" ){
+            if(tokens.at(i)->getTokenType() == "LEFT_PAREN"){
+                return ParseExpression();
+            }
+            else if(tokens.at(i)->getTokenType() == "STRING"){
+                Parameter stringParam;
+                stringParam.newStringParam(tokens.at(i)->getContent());
+                ParseTerminal("STRING");
+                return stringParam;
+            }
+            else{
+                Parameter stringParam;
+                stringParam.newStringParam(tokens.at(i)->getContent());
+                ParseTerminal("ID");
+                return stringParam;
+            }
+        }
+        else{
+            throw i;
+        }
+    }
+    Parameter ParseOperator(){
         if(tokens.at(i)->getTokenType() == "ADD" || tokens.at(i)->getTokenType() == "MULTIPLY"){
+            Parameter stringParam;
             if(tokens.at(i)->getTokenType() == "ADD"){
-                ParseParameterTerminal("ADD");
+                stringParam.newStringParam(tokens.at(i)->getContent());
+                ParseTerminal("ADD");
             }
             else if(tokens.at(i)->getTokenType() == "MULTIPLY"){
-                ParseParameterTerminal("MULTIPLY");
+                stringParam.newStringParam(tokens.at(i)->getContent());
+                ParseTerminal("MULTIPLY");
             }
+            return stringParam;
         }
         else{
             throw i;
@@ -364,12 +390,12 @@ public:
     }
     void ParseParameterTerminal(std::string tType) {
         if(tokens.at(i)->getTokenType() == tType){
-            if(!isExpression){
+
                 Parameter newParam;
                 newParam.newStringParam(tokens.at(i)->getContent());
                 domain.push_back(newParam);
                 numInPredicate++;
-            }
+
             i = i + 1;
         }
         else{
@@ -378,30 +404,33 @@ public:
     }
     string getPredicates(){
         string outPut;
+        outPut+="\nSchemes(";
+        outPut+=to_string((int)schemesList.size());
+        outPut+="):\n";
         if((int)schemesList.size() > 0){
-            outPut+="\nSchemes(";
-            outPut+=to_string((int)schemesList.size());
-            outPut+="):\n";
+
             for(int i = 0; i < (int)schemesList.size(); i++){
                 outPut+="\t";
                 outPut+=schemesList.at(i).getPredicate();
                 outPut+="\n";
             }
         }
+        outPut+="Facts(";
+        outPut+=to_string((int)factsList.size());
+        outPut+="):\n";
         if((int)factsList.size() > 0){
-            outPut+="Facts(";
-            outPut+=to_string((int)factsList.size());
-            outPut+="):\n";
+
             for(int i = 0; i < factsList.size(); i++){
                 outPut+="\t";
                 outPut+=factsList.at(i).getPredicate();
                 outPut+=".\n";
             }
         }
+        outPut+="Rules(";
+        outPut+=to_string((int)rulesList.size());
+        outPut+="):\n";
         if((int)queriesList.size() > 0){
-            outPut+="Rules(";
-            outPut+=to_string((int)rulesList.size());
-            outPut+="):\n";
+
             for(int i = 0; i < (int)rulesList.size(); i++){
                 outPut+="\t";
                 outPut+=rulesList.at(i).getRule();
@@ -409,20 +438,22 @@ public:
             }
         }
 
+        outPut+="Queries(";
+        outPut+=to_string((int)queriesList.size());
+        outPut+="):\n";
         if((int)queriesList.size() > 0){
-            outPut+="Queries(";
-            outPut+=to_string((int)queriesList.size());
-            outPut+="):\n";
+
             for(int i = 0; i < (int)queriesList.size(); i++){
                 outPut+="\t";
                 outPut+=queriesList.at(i).getPredicate();
                 outPut+="?\n";
             }
         }
+        outPut+="Domain(";
+        outPut+=to_string((int)factDomain.size());
+        outPut+="):\n";
         if((int)factsList.size() > 0){
-            outPut+="Domain(";
-            outPut+=to_string((int)factDomain.size());
-            outPut+="):\n";
+
             std::sort(factDomain.begin(), factDomain.end(), SortProductPointers());
             for(int i = 0; i < (int)factDomain.size(); i++){
                 outPut+="\t";
@@ -437,4 +468,5 @@ public:
 
 //};
 #endif //LEXER_PARSER_H
+
 

@@ -32,6 +32,6 @@ int main(int argc, char* argv[]) {
     }
     Parser myParser(tokens1);
     cout << myParser.Run();
-    cout << myParser.getPredicates();
+    //cout << myParser.getPredicates();
 
     }
